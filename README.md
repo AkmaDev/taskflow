@@ -1,22 +1,21 @@
-# projet-design-pattern
+# TaskFlow
 
-## Requirements
+Gestionnaire de tâches réactif construit avec un mini-framework TypeScript maison
+(Design Patterns : Builder, Factory, Singleton, Strategy, Observer — sans librairie externe hormis Vite).
 
-- Docker
-- Docker Compose
-
-## Development Server
+## Développement
 
 ```bash
-docker compose up -d
-docker compose exec node npm install
-docker compose exec node npm run dev
+npm install
+npm run dev
 ```
 
-## Build the app
+Ouvrir `http://localhost:5173`.
+
+## Build & Docker
 
 ```bash
-docker compose up -d
-docker compose exec node npm install
-docker compose exec node npm run build
+docker compose up --build
 ```
+
+Ouvrir `http://localhost:8090`.

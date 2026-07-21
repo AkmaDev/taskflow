@@ -1,0 +1,5 @@
+services:
+  taskflow:
+    build: .
+    ports:
+      - "8090:80"
