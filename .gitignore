@@ -2,3 +2,7 @@ node_modules/
 dist/
 .npm/
 .node_repl_history
+
+# Cours et sujet — local uniquement
+/cours/
+/Sujet*.pdf
