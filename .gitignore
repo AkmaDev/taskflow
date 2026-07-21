@@ -3,3 +3,7 @@ dist/
 .npm/
 .node_repl_history
 *.log
+
+# Cours et sujet — local uniquement
+/cours/
+/Sujet*.pdf
