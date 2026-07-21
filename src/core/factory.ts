@@ -56,11 +56,7 @@ function applyBase(element: HTMLElement, config: BaseTagConfig): void {
 }
 
 export class ButtonTag implements Tag {
-  private readonly config: ButtonConfig;
-
-  constructor(config: ButtonConfig) {
-    this.config = config;
-  }
+  constructor(private readonly config: ButtonConfig) {}
 
   toHtml(): HTMLElement {
     const element = document.createElement("button");
@@ -73,11 +69,7 @@ export class ButtonTag implements Tag {
 }
 
 export class DivTag implements Tag {
-  private readonly config: DivConfig;
-
-  constructor(config: DivConfig) {
-    this.config = config;
-  }
+  constructor(private readonly config: DivConfig) {}
 
   toHtml(): HTMLElement {
     const element = document.createElement("div");
@@ -90,11 +82,7 @@ export class DivTag implements Tag {
 }
 
 export class ImageTag implements Tag {
-  private readonly config: ImageConfig;
-
-  constructor(config: ImageConfig) {
-    this.config = config;
-  }
+  constructor(private readonly config: ImageConfig) {}
 
   toHtml(): HTMLElement {
     const element = document.createElement("img");
@@ -108,11 +96,7 @@ export class ImageTag implements Tag {
 }
 
 export class HorizontalRuleTag implements Tag {
-  private readonly config: BaseTagConfig;
-
-  constructor(config: BaseTagConfig) {
-    this.config = config;
-  }
+  constructor(private readonly config: BaseTagConfig) {}
 
   toHtml(): HTMLElement {
     const element = document.createElement("hr");
@@ -122,11 +106,7 @@ export class HorizontalRuleTag implements Tag {
 }
 
 export class InputTag implements Tag {
-  private readonly config: InputConfig;
-
-  constructor(config: InputConfig) {
-    this.config = config;
-  }
+  constructor(private readonly config: InputConfig) {}
 
   toHtml(): HTMLElement {
     const element = document.createElement("input");
@@ -143,11 +123,7 @@ export class InputTag implements Tag {
 }
 
 export class HeadingTag implements Tag {
-  private readonly config: HeadingConfig;
-
-  constructor(config: HeadingConfig) {
-    this.config = config;
-  }
+  constructor(private readonly config: HeadingConfig) {}
 
   toHtml(): HTMLElement {
     const element = document.createElement(`h${this.config.level}`);
@@ -160,11 +136,7 @@ export class HeadingTag implements Tag {
 }
 
 export class SpanTag implements Tag {
-  private readonly config: SpanConfig;
-
-  constructor(config: SpanConfig) {
-    this.config = config;
-  }
+  constructor(private readonly config: SpanConfig) {}
 
   toHtml(): HTMLElement {
     const element = document.createElement("span");
@@ -177,11 +149,7 @@ export class SpanTag implements Tag {
 }
 
 export class ParagraphTag implements Tag {
-  private readonly config: ParagraphConfig;
-
-  constructor(config: ParagraphConfig) {
-    this.config = config;
-  }
+  constructor(private readonly config: ParagraphConfig) {}
 
   toHtml(): HTMLElement {
     const element = document.createElement("p");

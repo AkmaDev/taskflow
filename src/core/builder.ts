@@ -4,11 +4,8 @@ export class TagBuilder {
   private readonly styles = new Map<string, string>();
   private readonly events = new Map<string, EventListener>();
   private readonly content: Node[] = [];
-  private readonly tag: string;
 
-  constructor(tag: string) {
-    this.tag = tag;
-  }
+  constructor(private readonly tag: string) {}
 
   withText(text: string): this {
     this.content.push(document.createTextNode(text));
