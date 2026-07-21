@@ -1,27 +1,12 @@
+import { mountTaskManager } from "./components/task-manager.ts";
 import { TagBuilder } from "./core/builder.ts";
 import { TagFactory } from "./core/factory.ts";
 import { AppConfig, AppStore } from "./core/singleton.ts";
+import { LocalStorageAdapter } from "./core/strategy.ts";
 
 export function renderApp(root: HTMLElement): void {
   AppConfig.getInstance().set("appName", "TaskFlow");
-  const store = AppStore.getInstance();
-  store.setState("clicks", 0);
-
-  const counterLabel = TagFactory.create("paragraph", {
-    class: "counter-label",
-    text: "Clics : 0",
-  }).toHtml();
-
-  const incrementButton = new TagBuilder("button")
-    .withClass("btn-primary")
-    .withText("Cliquer ici")
-    .withEvent("click", () => {
-      const clicks = (store.getState<number>("clicks") ?? 0) + 1;
-      store.setState("clicks", clicks);
-      counterLabel.textContent = `Clics : ${clicks}`;
-      counterLabel.style.color = clicks % 2 === 0 ? "#f1f5f9" : "#a78bfa";
-    })
-    .build();
+  AppStore.getInstance().setStrategy(new LocalStorageAdapter("taskflow:"));
 
   const shell = new TagBuilder("div")
     .withClass("app-shell")
@@ -31,10 +16,14 @@ export function renderApp(root: HTMLElement): void {
         text: AppConfig.getInstance().get("appName") ?? "TaskFlow",
       }).toHtml(),
     )
-    .withChild(counterLabel)
-    .withChild(incrementButton)
-    .withChild(TagFactory.create("hr", {}).toHtml())
+    .withChild(
+      TagFactory.create("paragraph", {
+        class: "app-subtitle",
+        text: "Gestionnaire de tâches réactif",
+      }).toHtml(),
+    )
     .build();
 
   root.appendChild(shell);
+  void mountTaskManager(shell);
 }
