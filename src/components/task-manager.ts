@@ -48,9 +48,10 @@ function renderTaskItem(task: Task, onToggle: (id: string) => void, onRemove: (i
 }
 
 /**
- * Builds and mounts the reactive task manager into `root`. Tasks are held
- * in an Observable, persisted through the Singleton AppStore, and the list
- * re-renders directly (no virtual DOM) whenever the Observable emits.
+ * Construit et monte le gestionnaire de tâches réactif dans `root`. Les
+ * tâches sont conservées dans un Observable, persistées via le Singleton
+ * AppStore, et la liste se redessine directement (sans virtual DOM) à
+ * chaque émission de l'Observable.
  */
 export async function mountTaskManager(root: HTMLElement): Promise<void> {
   const store = AppStore.getInstance();

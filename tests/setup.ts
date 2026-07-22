@@ -1,10 +1,11 @@
 import "fake-indexeddb/auto";
 
 /**
- * Node >= 24 exposes an experimental native `localStorage` global that
- * shadows the one jsdom provides on `window`, and throws/returns undefined
- * without a `--localstorage-file` flag. Replace it with a minimal in-memory
- * Storage so `window.localStorage` behaves consistently across Node versions.
+ * Node >= 24 expose un `localStorage` natif expérimental qui masque celui
+ * fourni par jsdom sur `window`, et qui lève une erreur/retourne undefined
+ * sans le flag `--localstorage-file`. On le remplace par un Storage minimal
+ * en mémoire pour que `window.localStorage` se comporte pareil sur toutes
+ * les versions de Node.
  */
 class MemoryStorage implements Storage {
   private readonly store = new Map<string, string>();

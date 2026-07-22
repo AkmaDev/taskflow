@@ -1,4 +1,4 @@
-/** Fluent builder for constructing complex DOM elements without overloaded constructors. */
+/** Builder fluide pour construire des éléments DOM complexes sans constructeurs surchargés. */
 export class TagBuilder {
   private readonly classes = new Set<string>();
   private readonly styles = new Map<string, string>();

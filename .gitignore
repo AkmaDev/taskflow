@@ -3,6 +3,7 @@ dist/
 .npm/
 .node_repl_history
 *.log
+.claude/
 
 # Cours et sujet — local uniquement
 /cours/

@@ -14,34 +14,34 @@ function sharedContract(name: string, createStrategy: () => StorageStrategy) {
       strategy = createStrategy();
     });
 
-    it("returns undefined for a missing key", async () => {
+    it("retourne undefined pour une clé absente", async () => {
       await expect(strategy.get("missing")).resolves.toBeUndefined();
     });
 
-    it("stores and retrieves a value", async () => {
+    it("stocke et récupère une valeur", async () => {
       await strategy.set("theme", "dark");
       await expect(strategy.get("theme")).resolves.toBe("dark");
     });
 
-    it("stores and retrieves complex objects", async () => {
+    it("stocke et récupère des objets complexes", async () => {
       const user = { name: "Alice", role: "admin" };
       await strategy.set("user", user);
       await expect(strategy.get("user")).resolves.toEqual(user);
     });
 
-    it("overwrites an existing value", async () => {
+    it("écrase une valeur existante", async () => {
       await strategy.set("count", 1);
       await strategy.set("count", 2);
       await expect(strategy.get("count")).resolves.toBe(2);
     });
 
-    it("removes a stored value", async () => {
+    it("supprime une valeur stockée", async () => {
       await strategy.set("count", 1);
       await strategy.remove("count");
       await expect(strategy.get("count")).resolves.toBeUndefined();
     });
 
-    it("clears every stored value", async () => {
+    it("supprime toutes les valeurs stockées", async () => {
       await strategy.set("a", 1);
       await strategy.set("b", 2);
       await strategy.clear();
@@ -59,7 +59,7 @@ sharedContract(
 );
 
 describe("VolatileStorage", () => {
-  it("does not persist data across separate instances", async () => {
+  it("ne persiste pas les données entre deux instances distinctes", async () => {
     const first = new VolatileStorage();
     await first.set("a", 1);
 
@@ -73,14 +73,14 @@ describe("LocalStorageAdapter", () => {
     window.localStorage.clear();
   });
 
-  it("namespaces keys with the given prefix", async () => {
+  it("préfixe les clés avec le préfixe donné", async () => {
     const adapter = new LocalStorageAdapter("app:");
     await adapter.set("count", 42);
 
     expect(window.localStorage.getItem("app:count")).toBe("42");
   });
 
-  it("only clears keys under its own prefix", async () => {
+  it("ne supprime que les clés sous son propre préfixe", async () => {
     const adapter = new LocalStorageAdapter("app:");
     await adapter.set("count", 1);
     window.localStorage.setItem("other:count", "99");

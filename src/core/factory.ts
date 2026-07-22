@@ -1,4 +1,4 @@
-/** An element that knows how to render itself as a DOM node. */
+/** Un élément capable de se rendre lui-même sous forme de nœud DOM. */
 export interface Tag {
   toHtml(): HTMLElement;
 }
@@ -189,7 +189,7 @@ const registry: TagRegistry = {
   paragraph: ParagraphTag,
 };
 
-/** Instantiates the concrete Tag matching an ElementType — no if/switch, backed by a constructor registry. */
+/** Instancie le Tag concret correspondant à un ElementType — sans if/switch, via un registre de constructeurs. */
 export class TagFactory {
   static create<K extends ElementType>(type: K, config: TagConfigMap[K]): Tag {
     const Ctor = registry[type];

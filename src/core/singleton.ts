@@ -1,6 +1,6 @@
 import { type StorageStrategy, VolatileStorage } from "./strategy.ts";
 
-/** Global application configuration, shared across the app without manual passing. */
+/** Configuration globale de l'application, partagée sans passage manuel. */
 export class AppConfig {
   private static instance: AppConfig | undefined;
   private readonly config: Record<string, string> = {};
@@ -24,9 +24,10 @@ export class AppConfig {
 }
 
 /**
- * Global application state store. Reads are synchronous against an in-memory
- * cache; writes are also applied to a StorageStrategy in the background so
- * the chosen backend (volatile, localStorage, IndexedDB) stays in sync.
+ * Store d'état global de l'application. Les lectures sont synchrones via un
+ * cache en mémoire ; les écritures sont aussi appliquées à une StorageStrategy
+ * en arrière-plan, pour que le backend choisi (volatile, localStorage,
+ * IndexedDB) reste synchronisé.
  */
 export class AppStore {
   private static instance: AppStore | undefined;
@@ -41,7 +42,7 @@ export class AppStore {
     return AppStore.instance;
   }
 
-  /** Swaps the persistence backend used for subsequent writes and reloads. */
+  /** Change le backend de persistance utilisé pour les prochaines écritures et lectures. */
   setStrategy(strategy: StorageStrategy): void {
     this.strategy = strategy;
   }
@@ -55,7 +56,7 @@ export class AppStore {
     void this.strategy.set(key, value);
   }
 
-  /** Reads a value from the current backend and populates the in-memory cache. */
+  /** Lit une valeur depuis le backend courant et alimente le cache en mémoire. */
   async load<T>(key: string): Promise<T | undefined> {
     const value = await this.strategy.get<T>(key);
     if (value !== undefined) {

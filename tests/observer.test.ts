@@ -2,19 +2,19 @@ import { describe, expect, it, vi } from "vitest";
 import { Observable } from "../src/core/observer.ts";
 
 describe("Observable", () => {
-  it("exposes the initial value via get()", () => {
+  it("expose la valeur initiale via get()", () => {
     const counter = new Observable(0);
     expect(counter.get()).toBe(0);
   });
 
-  it("calls a new subscriber immediately with the current value", () => {
+  it("appelle un nouvel abonné immédiatement avec la valeur courante", () => {
     const counter = new Observable(42);
     const callback = vi.fn();
     counter.subscribe(callback);
     expect(callback).toHaveBeenCalledExactlyOnceWith(42);
   });
 
-  it("notifies every subscriber when next() is called", () => {
+  it("notifie tous les abonnés quand next() est appelé", () => {
     const counter = new Observable(0);
     const first = vi.fn();
     const second = vi.fn();
@@ -27,13 +27,13 @@ describe("Observable", () => {
     expect(second).toHaveBeenLastCalledWith(1);
   });
 
-  it("updates get() after next()", () => {
+  it("met à jour get() après next()", () => {
     const counter = new Observable(0);
     counter.next(5);
     expect(counter.get()).toBe(5);
   });
 
-  it("stops notifying a subscriber after it unsubscribes", () => {
+  it("arrête de notifier un abonné après son désabonnement", () => {
     const counter = new Observable(0);
     const callback = vi.fn();
     const unsubscribe = counter.subscribe(callback);
@@ -45,7 +45,7 @@ describe("Observable", () => {
     expect(callback).not.toHaveBeenCalled();
   });
 
-  it("only unsubscribes the targeted callback, not other subscribers", () => {
+  it("ne désabonne que le callback ciblé, pas les autres abonnés", () => {
     const counter = new Observable(0);
     const first = vi.fn();
     const second = vi.fn();
