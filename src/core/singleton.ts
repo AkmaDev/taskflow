@@ -1,3 +1,4 @@
+import { Observable } from "./observer.ts";
 import { type StorageStrategy, VolatileStorage } from "./strategy.ts";
 
 /** Configuration globale de l'application, partagée sans passage manuel. */
@@ -32,6 +33,7 @@ export class AppConfig {
 export class AppStore {
   private static instance: AppStore | undefined;
   private readonly state: Record<string, unknown> = {};
+  private readonly observables = new Map<string, Observable<unknown>>();
 
   private constructor(private strategy: StorageStrategy) {}
 
@@ -54,6 +56,24 @@ export class AppStore {
   setState(key: string, value: unknown): void {
     this.state[key] = value;
     void this.strategy.set(key, value);
+    this.getObservable(key).next(value);
+  }
+
+  /**
+   * Applique une fonction pure à l'état courant de `key` pour produire le
+   * suivant — une mise à jour prévisible, sans mutation directe du state.
+   */
+  dispatch<T>(key: string, action: (current: T | undefined) => T): void {
+    this.setState(key, action(this.getState<T>(key)));
+  }
+
+  /**
+   * Abonne un callback aux changements de `key` ; il est aussi appelé
+   * immédiatement avec la valeur courante. Retourne une fonction de
+   * désabonnement.
+   */
+  subscribe<T>(key: string, callback: (value: T | undefined) => void): () => void {
+    return this.getObservable(key).subscribe(callback as (value: unknown) => void);
   }
 
   /** Lit une valeur depuis le backend courant et alimente le cache en mémoire. */
@@ -61,7 +81,17 @@ export class AppStore {
     const value = await this.strategy.get<T>(key);
     if (value !== undefined) {
       this.state[key] = value;
+      this.getObservable(key).next(value);
     }
     return value;
+  }
+
+  private getObservable(key: string): Observable<unknown> {
+    let observable = this.observables.get(key);
+    if (!observable) {
+      observable = new Observable<unknown>(this.state[key]);
+      this.observables.set(key, observable);
+    }
+    return observable;
   }
 }
