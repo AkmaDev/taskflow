@@ -1,7 +1,8 @@
+import { createFormField } from "./form-field.ts";
 import { TagBuilder } from "../core/builder.ts";
 import { TagFactory } from "../core/factory.ts";
-import { Observable } from "../core/observer.ts";
 import { AppStore } from "../core/singleton.ts";
+import { MinLengthValidator, RequiredValidator } from "../core/validation.ts";
 
 export interface Task {
   id: string;
@@ -48,49 +49,43 @@ function renderTaskItem(task: Task, onToggle: (id: string) => void, onRemove: (i
 }
 
 /**
- * Construit et monte le gestionnaire de tâches réactif dans `root`. Les
- * tâches sont conservées dans un Observable, persistées via le Singleton
- * AppStore, et la liste se redessine directement (sans virtual DOM) à
- * chaque émission de l'Observable.
+ * Construit et monte le gestionnaire de tâches réactif dans `root`. L'état
+ * vit dans le Singleton AppStore, rendu réactif par l'Observer (`subscribe`)
+ * et modifié de façon prévisible via `dispatch` ; la liste se redessine
+ * directement (sans virtual DOM) à chaque changement d'état.
  */
 export async function mountTaskManager(root: HTMLElement): Promise<void> {
   const store = AppStore.getInstance();
-  const persisted = await store.load<Task[]>(STORAGE_KEY);
-  const tasks = new Observable<Task[]>(persisted ?? []);
+  await store.load<Task[]>(STORAGE_KEY);
 
-  function commit(next: Task[]): void {
-    store.setState(STORAGE_KEY, next);
-    tasks.next(next);
-  }
-
-  function addTask(rawText: string): void {
-    const text = rawText.trim();
-    if (text === "") {
-      return;
-    }
-    commit([...tasks.get(), { id: crypto.randomUUID(), text, done: false }]);
+  function addTask(text: string): void {
+    store.dispatch<Task[]>(STORAGE_KEY, (current) => [...(current ?? []), { id: crypto.randomUUID(), text, done: false }]);
   }
 
   function toggleTask(id: string): void {
-    commit(tasks.get().map((task) => (task.id === id ? { ...task, done: !task.done } : task)));
+    store.dispatch<Task[]>(STORAGE_KEY, (current) =>
+      (current ?? []).map((task) => (task.id === id ? { ...task, done: !task.done } : task)),
+    );
   }
 
   function removeTask(id: string): void {
-    commit(tasks.get().filter((task) => task.id !== id));
+    store.dispatch<Task[]>(STORAGE_KEY, (current) => (current ?? []).filter((task) => task.id !== id));
   }
 
-  const input = TagFactory.create("input", {
-    class: "task-input",
+  const field = createFormField({
     placeholder: "Nouvelle tâche…",
-  }).toHtml() as HTMLInputElement;
+    validators: [new RequiredValidator("La tâche ne peut pas être vide."), new MinLengthValidator(3)],
+  });
 
   const submit = (): void => {
-    addTask(input.value);
-    input.value = "";
-    input.focus();
+    if (!field.validate()) {
+      return;
+    }
+    addTask(field.value.get().trim());
+    field.reset();
   };
 
-  input.addEventListener("keydown", (event) => {
+  field.input.addEventListener("keydown", (event) => {
     if (event.key === "Enter") {
       submit();
     }
@@ -102,16 +97,17 @@ export async function mountTaskManager(root: HTMLElement): Promise<void> {
     .withEvent("click", submit)
     .build();
 
-  const form = new TagBuilder("div").withClass("task-form").withChild(input).withChild(addButton).build();
+  const form = new TagBuilder("div").withClass("task-form").withChild(field.element).withChild(addButton).build();
   const summary = TagFactory.create("paragraph", { class: "task-summary" }).toHtml();
   const list = new TagBuilder("ul").withClass("task-list").build();
 
-  tasks.subscribe((current) => {
+  store.subscribe<Task[]>(STORAGE_KEY, (current) => {
+    const tasks = current ?? [];
     list.innerHTML = "";
-    for (const task of current) {
+    for (const task of tasks) {
       list.appendChild(renderTaskItem(task, toggleTask, removeTask));
     }
-    summary.textContent = renderSummary(current);
+    summary.textContent = renderSummary(tasks);
   });
 
   root.appendChild(
