@@ -17,16 +17,17 @@ export class Nav extends Component {
   render(): HTMLElement {
     const nav = new TagBuilder("nav").withClass("nav");
     for (const link of LINKS) {
-      nav.withChild(
-        new TagBuilder("a")
-          .withClass(window.location.pathname === link.path ? "nav-link nav-link-active" : "nav-link")
-          .withText(link.label)
-          .withEvent("click", (event) => {
-            event.preventDefault();
-            navigateTo(link.path);
-          })
-          .build(),
-      );
+      const linkBuilder = new TagBuilder("a")
+        .withClass("nav-link")
+        .withText(link.label)
+        .withEvent("click", (event) => {
+          event.preventDefault();
+          navigateTo(link.path);
+        });
+      if (window.location.pathname === link.path) {
+        linkBuilder.withClass("nav-link-active");
+      }
+      nav.withChild(linkBuilder.build());
     }
     return nav.build();
   }
