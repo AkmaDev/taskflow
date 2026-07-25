@@ -1,7 +1,42 @@
 import { Observable } from "../core/observer.ts";
-import type { Component } from "../components/component.ts";
+import type { Mountable } from "../components/component.ts";
 
-export type RouteFactory = () => Component;
+export type RouteParams = Record<string, string>;
+export type RouteFactory = (params: RouteParams) => Mountable;
+
+/** Retourne les params capturés si `path` correspond au pattern (segments `:nom`), sinon `undefined`. */
+function matchRoute(pattern: string, path: string): RouteParams | undefined {
+  const patternSegments = pattern.split("/").filter((segment) => segment !== "");
+  const pathSegments = path.split("/").filter((segment) => segment !== "");
+  if (patternSegments.length !== pathSegments.length) {
+    return undefined;
+  }
+
+  const params: RouteParams = {};
+  for (let i = 0; i < patternSegments.length; i++) {
+    const patternSegment = patternSegments[i]!;
+    const pathSegment = pathSegments[i]!;
+    if (patternSegment.startsWith(":")) {
+      params[patternSegment.slice(1)] = pathSegment;
+    } else if (patternSegment !== pathSegment) {
+      return undefined;
+    }
+  }
+  return params;
+}
+
+/**
+ * Navigue vers `path` sans avoir de référence directe au Router (ex. un lien
+ * dans une page). Pousse l'historique puis émet `popstate`, que toute
+ * instance de Router à l'écoute capte pour se re-rendre.
+ */
+export function navigateTo(path: string): void {
+  if (window.location.pathname === path) {
+    return;
+  }
+  history.pushState({}, "", path);
+  window.dispatchEvent(new PopStateEvent("popstate"));
+}
 
 /**
  * Router client basé sur l'History API. Monte le composant correspondant à
@@ -10,7 +45,7 @@ export type RouteFactory = () => Component;
  */
 export class Router {
   private readonly routeChange: Observable<string>;
-  private currentComponent: Component | undefined;
+  private currentComponent: Mountable | undefined;
 
   constructor(
     private readonly routes: Record<string, RouteFactory>,
@@ -29,11 +64,7 @@ export class Router {
 
   /** Pousse une nouvelle entrée d'historique et rend la route correspondante. */
   navigate(path: string): void {
-    if (window.location.pathname === path) {
-      return;
-    }
-    history.pushState({}, "", path);
-    this.render(path);
+    navigateTo(path);
   }
 
   /** S'abonne aux changements de route ; retourne une fonction de désabonnement. */
@@ -42,13 +73,27 @@ export class Router {
   }
 
   private render(path: string): void {
-    const factory = this.routes[path] ?? this.routes["*"];
-    if (factory === undefined) {
+    const match = this.matchFactory(path);
+    if (match === undefined) {
       return;
     }
     this.currentComponent?.destroy();
-    this.currentComponent = factory();
+    this.currentComponent = match.factory(match.params);
     this.currentComponent.mount(this.container);
     this.routeChange.next(path);
+  }
+
+  private matchFactory(path: string): { factory: RouteFactory; params: RouteParams } | undefined {
+    for (const [pattern, factory] of Object.entries(this.routes)) {
+      if (pattern === "*") {
+        continue;
+      }
+      const params = matchRoute(pattern, path);
+      if (params !== undefined) {
+        return { factory, params };
+      }
+    }
+    const fallback = this.routes["*"];
+    return fallback === undefined ? undefined : { factory: fallback, params: {} };
   }
 }

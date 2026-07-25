@@ -87,6 +87,24 @@ describe("Router", () => {
     expect(callback).toHaveBeenLastCalledWith("/about");
   });
 
+  it("capture les segments dynamiques (:id) et les passe à la factory", () => {
+    resetLocation("/tasks/42");
+    const container = document.createElement("div");
+    const factory = vi.fn(() => new Page({ label: "Détail" }));
+    const router = new Router(
+      {
+        "/": () => new Page({ label: "Accueil" }),
+        "/tasks/:id": factory,
+      },
+      container,
+    );
+
+    router.start();
+
+    expect(factory).toHaveBeenCalledWith({ id: "42" });
+    expect(container.textContent).toBe("Détail");
+  });
+
   it("réagit à l'événement popstate en re-rendant la route courante", () => {
     const container = document.createElement("div");
     const router = new Router(

@@ -1,12 +1,23 @@
 /**
+ * Vue minimale d'un Component, sans référence à son type de Props — c'est ce
+ * type que le Router manipule, pour pouvoir monter des composants aux Props
+ * différentes derrière une même table de routes.
+ */
+export interface Mountable {
+  mount(container: HTMLElement): HTMLElement;
+  update(): void;
+  destroy(): void;
+}
+
+/**
  * Composant réutilisable encapsulant état, rendu et cycle de vie
  * (onMount/onUpdate/onDestroy). Le rendu se fait sans virtual DOM : `render()`
  * reconstruit l'élément et `update()` le remplace directement dans le DOM.
  */
-export abstract class Component<Props = Record<string, unknown>> {
+export abstract class Component<Props = Record<string, unknown>> implements Mountable {
   protected readonly props: Props;
-  private element: HTMLElement | undefined;
-  private readonly mountedChildren: Component[] = [];
+  protected element: HTMLElement | undefined;
+  private readonly mountedChildren: Mountable[] = [];
 
   constructor(props: Props) {
     this.props = props;
@@ -55,7 +66,7 @@ export abstract class Component<Props = Record<string, unknown>> {
    * mécanisme de composition (slots) : un parent peut instancier des enfants
    * réutilisables dans son render() sans gérer leur cycle de vie manuellement.
    */
-  protected mountChild(child: Component, container: HTMLElement): HTMLElement {
+  protected mountChild(child: Mountable, container: HTMLElement): HTMLElement {
     this.mountedChildren.push(child);
     return child.mount(container);
   }
