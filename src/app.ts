@@ -9,6 +9,7 @@ import { TaskDetailPage } from "./pages/task-detail-page.ts";
 import { TasksPage } from "./pages/tasks-page.ts";
 import { Router } from "./router/router.ts";
 
+/** Point d'entrée applicatif : initialise config, store, navigation et routeur, puis monte l'app dans `root`. */
 export function renderApp(root: HTMLElement): void {
   AppConfig.getInstance().set("appName", "TaskFlow");
   AppStore.getInstance().setStrategy(new LocalStorageAdapter("taskflow:"));

@@ -28,8 +28,11 @@ interface PendingRequest {
 /** Transforme une requête avant son envoi (auth, logging, en-têtes communs…) — un point d'extension façon Strategy. */
 export type HttpInterceptor = (request: PendingRequest) => PendingRequest;
 
+/** Options facultatives d'une requête HTTP. */
 export interface HttpRequestOptions {
+  /** En-têtes additionnels fusionnés avec les en-têtes par défaut. */
   headers?: Record<string, string>;
+  /** Délai en millisecondes avant abandon de la requête (remplace le défaut du client). */
   timeoutMs?: number;
 }
 
@@ -47,18 +50,22 @@ export class HttpClient {
     this.interceptors.push(interceptor);
   }
 
+  /** Effectue une requête GET vers `path`. */
   get<T>(path: string, options?: HttpRequestOptions): Promise<T> {
     return this.request<T>("GET", path, undefined, options);
   }
 
+  /** Effectue une requête POST vers `path` avec `body` sérialisé en JSON. */
   post<T>(path: string, body?: unknown, options?: HttpRequestOptions): Promise<T> {
     return this.request<T>("POST", path, body, options);
   }
 
+  /** Effectue une requête PUT vers `path` avec `body` sérialisé en JSON. */
   put<T>(path: string, body?: unknown, options?: HttpRequestOptions): Promise<T> {
     return this.request<T>("PUT", path, body, options);
   }
 
+  /** Effectue une requête DELETE vers `path`. */
   delete<T>(path: string, options?: HttpRequestOptions): Promise<T> {
     return this.request<T>("DELETE", path, undefined, options);
   }

@@ -1,6 +1,8 @@
 /** Stratégie de validation d'un champ : une règle et le message d'erreur associé. */
 export interface ValidationStrategy {
+  /** Message d'erreur affiché quand la validation échoue. */
   readonly message: string;
+  /** Retourne `true` si `value` respecte la règle. */
   validate(value: string): boolean;
 }
 

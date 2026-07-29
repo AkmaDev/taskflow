@@ -4,6 +4,7 @@ import { Component } from "../components/component.ts";
 import { HttpClient } from "../http/client.ts";
 import { navigateTo } from "../router/router.ts";
 
+/** Props de la page Détail : identifiant de la ressource distante à charger. */
 export interface TaskDetailProps {
   id: string;
 }

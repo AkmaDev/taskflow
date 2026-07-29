@@ -4,12 +4,17 @@ import { TagFactory } from "../core/factory.ts";
 import { Observable } from "../core/observer.ts";
 import { type ValidationStrategy, validateField } from "../core/validation.ts";
 
+/** Options de création d'un FormField. */
 export interface FormFieldOptions {
+  /** Texte affiché quand le champ est vide. */
   placeholder: string;
+  /** Type HTML de l'input (`text` par défaut). */
   type?: string;
+  /** Stratégies de validation appliquées à la valeur du champ. */
   validators?: readonly ValidationStrategy[];
 }
 
+/** Champ de formulaire construit par createFormField, exposant sa valeur réactive et sa validation. */
 export interface FormField {
   /** Élément prêt à insérer dans le DOM (input + zone d'erreur). */
   readonly element: HTMLElement;

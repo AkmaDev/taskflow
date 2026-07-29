@@ -1,8 +1,11 @@
 import { TagBuilder } from "../core/builder.ts";
 import { Component } from "./component.ts";
 
+/** Props du composant Card. */
 export interface CardProps {
+  /** Titre affiché en en-tête de la carte. */
   title: string;
+  /** Contenu personnalisé inséré dans le slot de la carte. */
   children?: HTMLElement[];
 }
 

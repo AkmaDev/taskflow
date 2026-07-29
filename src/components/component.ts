@@ -4,8 +4,11 @@
  * différentes derrière une même table de routes.
  */
 export interface Mountable {
+  /** Rend l'élément et l'insère dans `container`. */
   mount(container: HTMLElement): HTMLElement;
+  /** Re-rend l'élément et remplace son nœud existant dans le DOM. */
   update(): void;
+  /** Retire l'élément du DOM et libère ses ressources. */
   destroy(): void;
 }
 
@@ -23,10 +26,14 @@ export abstract class Component<Props = Record<string, unknown>> implements Moun
     this.props = props;
   }
 
+  /** Construit le nœud DOM représentant l'état courant du composant. */
   abstract render(): HTMLElement;
 
+  /** Hook de cycle de vie appelé juste après l'insertion du composant dans le DOM. */
   onMount(): void {}
+  /** Hook de cycle de vie appelé juste après chaque re-rendu du composant. */
   onUpdate(): void {}
+  /** Hook de cycle de vie appelé juste après le retrait du composant du DOM. */
   onDestroy(): void {}
 
   /** Rend le composant et l'insère dans `container`. */

@@ -4,9 +4,13 @@ import { TagFactory } from "../core/factory.ts";
 import { AppStore } from "../core/singleton.ts";
 import { MinLengthValidator, RequiredValidator } from "../core/validation.ts";
 
+/** Une tâche de la todo-list, persistée dans l'AppStore. */
 export interface Task {
+  /** Identifiant unique (UUID). */
   id: string;
+  /** Libellé de la tâche. */
   text: string;
+  /** Indique si la tâche est terminée. */
   done: boolean;
 }
 
